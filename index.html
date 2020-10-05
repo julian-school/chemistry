@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+
+<html> 
+ <head>
+    <title>Simulations</title> 
+</head>
+ <body>
+    <p align="center"> 
+      <canvas id="canv1"></canvas> 
+    </p>
+    <p align="center"> 
+      <canvas id="canv2"></canvas> 
+    </p>
+ </body>
+
+ <script src="https://cdn.jsdelivr.net/processing.js/1.4.8/processing.min.js"></script> 
+ 
+ <script>
+    var sketchProc1 = function(processingInstance) {
+     with (processingInstance) {
+        size(600, 600); 
+        frameRate(60);
+
+
+
+
+
+    }};
+
+    var canvas1 = document.getElementById("canv1"); 
+
+    var processingInstance = new Processing(canvas1, sketchProc); 
+    
+    
+    var sketchProc2 = function(processingInstance) {
+     with (processingInstance) {
+        size(600, 400); 
+        frameRate(60);
+angleMode = "radians";
+function Particle(position){
+  this.acceleration = new PVector(0, 0);
+  this.velocity = new PVector(3, random(-1, 1));
+  this.position = position.get();
+  this.targetM = 50;
+  this.targets = [[width/2, height/2], [width/2, height/4], [width/2, height-height/4]];
+  this.mass = random(5, 10); 
+  this.run = function(){
+    this.update();
+    this.display();
+  };
+  this.applyForce = function(force){
+    var f = force.get();
+    f.div(this.mass);
+    this.acceleration.add(f);
+  };
+  this.update = function(){
+    this.velocity.add(this.acceleration);
+    this.position.add(this.velocity);
+    this.acceleration.mult(0);
+    
+    for(var i = 0; i < this.targets.length; i++){
+            
+    if(dist(this.position.x, this.position.y, this.targets[i][0], this.targets[i][1]) < this.targetM/2){
+        var xs = [-1, 1];
+        var ys = [-1.5, -1];
+        this.velocity.x*=xs[round(random(1))];
+        this.velocity.y*=ys[round(random(1))];
+    }
+    
+
+     fill(255, 255, 0);
+        ellipse(this.targets[i][0], this.targets[i][1], this.targetM, this.targetM);
+    }
+   
+
+  };
+  this.display = function(){
+    noStroke();
+    fill(255, 0, 0);
+    ellipse(this.position.x, this.position.y, this.mass, this.mass);
+  };
+  this.isDead = function(){
+    if (this.position.x < 0 || this.position.y < 0 || this.position.y > height || this.position.x > width) {
+           return true;
+    } else {
+          return false;
+    }
+  };
+}
+function ParticleSystem(position) {
+  this.origin = position.get();
+  this.particles = [];
+  this.addParticle = function(){
+    this.particles.push(new Particle(this.origin));
+  };
+  this.applyForce = function(f){
+      for(var i = 0; i < this.particles.length; i++){
+        this.particles[i].applyForce(f);
+      }
+  };
+  this.run = function(){
+	for (var i = this.particles.length-1; i >= 0; i--) {
+        var p = this.particles[i];
+        p.run();
+        if (p.isDead()) {
+          this.particles.splice(i, 1);
+        }
+  }
+  };
+}
+
+var particleSystem = new ParticleSystem(new PVector(0, height/2));
+var wind = new PVector(0, 0);
+
+var draw = function() {
+  background(0, 0, 0);
+
+  // Apply gravity force to all Particles
+  particleSystem.applyForce(wind);
+  particleSystem.addParticle();
+  particleSystem.run();
+};
+
+
+
+
+
+    }};
+
+    var canvas2 = document.getElementById("canv2"); 
+
+    var processingInstance = new Processing(canvas2, sketchProc2); 
+ </script>
+
+</html>
